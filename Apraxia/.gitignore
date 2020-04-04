@@ -1,4 +1,3 @@
-apraxia.code-workspace
 node_modules/**/*
 .expo/*
 npm-debug.*
