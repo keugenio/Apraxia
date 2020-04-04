@@ -1,2 +1,6 @@
+.gitignore
 node_modules
-*apraxia.code-workplace
+apraxia.code-workspace
+_tests_
+.expo
+.expo-shared
