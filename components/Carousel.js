@@ -10,37 +10,20 @@ import {
 } from 'react-native';
 import Colors from '../constants/Colors';
 
-
-const ENTRIES1 = [
-  {
-    word:'page'
-  },
-  {
-    word:'peer'
-  },
-  {
-    word:'pit'
-  },
-  {
-    word:'pond'
-  },
-  {
-    word:'put'
-  },
-];
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 const ExerciseCarousel = props => {
   const [entries, setEntries] = useState([]);
   const carouselRef = useRef(null);
+  const ENTRIES = props.words;
 
   const goForward = () => {
     carouselRef.current.snapToNext();
   };
 
   useEffect(() => {
-    setEntries(ENTRIES1);
+    setEntries(ENTRIES);
   }, []);
 
   const renderItem = ({item, index}, parallaxProps) => {
