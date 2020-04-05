@@ -22,7 +22,8 @@ renderItem = ({ item }) => (
 
 export default function MyExercises() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentWords, setCurrentWords] = useState([])
+  const [currentWords, setCurrentWords] = useState([]);
+  const [exerciseType, setExerciseType] = useState();
   const exercises = [
       {
         name: 'P',
@@ -42,7 +43,8 @@ export default function MyExercises() {
           {
             word:'put'
           },
-        ]
+        ],
+        type:'Phoenomic Group'
       },
       {
         name: 'C',
@@ -62,7 +64,8 @@ export default function MyExercises() {
           {
             word:'coop'
           },
-        ]
+        ],
+        type:'Phoenomic Group'
       },
   ];
 
@@ -82,6 +85,7 @@ export default function MyExercises() {
                 onPress = {()=>{
                   setCurrentWords(item.words);
                   setModalVisible(true);
+                  setExerciseType(item.type);
                 }}
               />
             ))
@@ -100,6 +104,7 @@ export default function MyExercises() {
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
+          <Text style={styles.textStyle}>{exerciseType}</Text>
           <ExerciseCarousel words={currentWords} />
 
           <TouchableHighlight
