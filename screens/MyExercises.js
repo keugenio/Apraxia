@@ -1,13 +1,14 @@
 import * as WebBrowser from 'expo-web-browser';
-import React, { useState } from 'react';
-import { Modal, Platform, StyleSheet, View, Alert, TouchableHighlight, Text, Dimensions } from 'react-native';
-import { ListItem, FlatList } from 'react-native-elements';
+import React, { useState, useEffect } from 'react';
+import { Modal, Platform, StyleSheet, View, Alert, TouchableHighlight, Text, Dimensions, FlatList } from 'react-native';
+import { Avatar, ListItem } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import Colors from '../constants/Colors';
 import ExerciseCarousel from "../components/Carousel";
 
+
 const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+
 keyExtractor = (item, index) => index.toString()
 
 renderItem = ({ item }) => (
@@ -68,11 +69,39 @@ export default function MyExercises() {
         type:'Phoenomic Group'
       },
   ];
+  const [page, setPage] = useState(1);
+  const [seed, setSeed] = useState(3);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState();
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(()=>{
+    const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
+    
+    fetch(url)
+      .then(res => res.json())
+      .then(res => {
+        setData(res.results);
+        setError(res.error || null);
+        setLoading(false);
+        setRefreshing(false);
+      })
+      .catch(error => {
+        setError(error);
+        setLoading(false);
+      });
+
+  }, []);
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View>
+      
+      { /* <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={{backgroundColor:Colors.backgroundColor}}>
+          {error && <Text style={{color:Colors.orange}}>{error}</Text>}
+          <Text style={{color:Colors.white}}>{data.length}</Text>
+          
           {
             exercises.map((item, i) => (
               <ListItem
@@ -90,42 +119,56 @@ export default function MyExercises() {
               />
             ))
           }
-      </View>
-      </ScrollView>
+
+        </View> 
+        </ScrollView> */}
+          <FlatList
+            data={data}
+            renderItem={({ item, i }) => (
+              <ListItem
+                roundAvatar
+                chevron
+                title={`${item.name.first} ${item.name.last}`}
+                subtitle={item.email}
+                leftAvatar={{source:{uri: item.picture.thumbnail}}}
+                key={item => item.login.uuid}
+              />
+            )}
+          />      
 
       <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
-      }}
-      
-    >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.textStyle}>{exerciseType}</Text>
-          <ExerciseCarousel words={currentWords} />
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.textStyle}>{exerciseType}</Text>
+            <ExerciseCarousel words={currentWords} />
 
-          <TouchableHighlight
-            style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-            onPress={() => {
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <Text style={styles.textStyle}>Done</Text>
-          </TouchableHighlight>
-        </View>
+            <TouchableHighlight
+              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <Text style={styles.textStyle}>Done</Text>
+            </TouchableHighlight>
           </View>
-    </Modal>
+            </View>
+      </Modal>
 
       {/* <View style={styles.tabBarInfoContainer}>
         <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
+            </View> */}
+    </View>  
 
-          </View> */}
-    </View>
   );
 }
+
 
 MyExercises.navigationOptions = {
   header: null,
@@ -137,7 +180,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background
   },
   contentContainer: {
-    paddingTop: 30
+    paddingTop: 30,
+    backgroundColor:Colors.dark
   },
   welcomeContainer: {
     alignItems: 'center',
