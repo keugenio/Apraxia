@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Text, View, SectionList, ImageBackground} from 'react-native';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
-import {auth} from '../components/Firebase';
+import Firebase from '../components/Firebase';
 
 import Colors from '../constants/Colors';
 import { UserContext } from '../components/common/UserContext';
@@ -44,7 +44,7 @@ export default function Profile() {
       {user && <OptionButton
         icon="md-exit"
         label="Logout"
-        onPress={() => auth.signOut().then(()=>{
+        onPress={() => Firebase.auth().signOut().then(()=>{
           setUser(null)
         })}
         isLastOption

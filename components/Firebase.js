@@ -16,12 +16,7 @@ const firebaseConfig = {
   measurementId: firebaseKey.measurementId
 };
 // Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-export const auth = firebase.auth();
-export const dB = firebase.database();
+const Firebase = firebase.initializeApp(firebaseConfig);
 
 // tables
 /* export const dbRaces = firebase.firestore().collection('races');
@@ -32,4 +27,4 @@ export const dbCrews = firebase.firestore().collection('crews');
 export const dbAllTimeTrials = firebase.firestore().collection('TimeTrialsForEveryone');
 */
 
-export default firebase;
+export default Firebase;

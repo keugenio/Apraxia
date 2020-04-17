@@ -10,29 +10,18 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
-import firebase from 'firebase';
-import firebaseKey from './components/keys/firebaseKey';
+import Firebase from '../Apraxia/components/Firebase';
 
 import MyExercises from '../Apraxia/screens/MyExercises';
 import Profile from '../Apraxia/screens/Profile';
 import LoginForm from '../Apraxia/components/LoginForm';
+import SignUp from '../Apraxia/components/SignUp';
 
 import useLinking from './navigation/useLinking';
 import Colors from './constants/Colors';
 
 const RootStack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
-
-const firebaseConfig = {
-  apiKey: firebaseKey.apiKey,
-  authDomain: firebaseKey.authDomain,
-  databaseURL: firebaseKey.databaseURL,
-  projectId: firebaseKey.projectId,
-  storageBucket: firebaseKey.storageBucket,
-  messagingSenderId: firebaseKey.messagingSenderId,
-  appId: firebaseKey.appId,
-  measurementId: firebaseKey.measurementId
-};
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -59,8 +48,7 @@ export default function App(props) {
         });
 
         // Load firebase
-        firebase.initializeApp(firebaseConfig);
-        firebase.auth().onAuthStateChanged((user)=>{
+        Firebase.auth().onAuthStateChanged((user)=>{
           if (user){
             setUser({...user})
          }
@@ -86,13 +74,14 @@ export default function App(props) {
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         <UserContext.Provider value={providerValue}>
           <NavigationContainer ref={containerRef} initialState={initialNavigationState} >
-            <RootStack.Navigator mode="modal" initialRouteName="LoginModal" >
+            <RootStack.Navigator mode="modal" initialRouteName="Main" >
               <RootStack.Screen
                 name="Main"
                 component={MainStackScreen}
                 options={{headerShown:false}}
               />
-              <RootStack.Screen name="LoginModal" component={ModalScreen} options={{headerShown:false}}/>
+              <RootStack.Screen name="LoginModal" component={LoginScreen} options={{headerShown:false}}/>
+              <RootStack.Screen name="SignUpModal" component={SignUpScreen} options={{headerShown:false}}/>
             </RootStack.Navigator>
           </NavigationContainer>
         </UserContext.Provider>
@@ -143,13 +132,17 @@ function MainStackScreen() {
   );
 }
 
-function ModalScreen() {
-  const navigation = useNavigation();
-
+function LoginScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <LoginForm />
-      <Button onPress={() => navigation.navigate('Main')} title="Dismiss" />
+    </View>
+  );
+}
+function SignUpScreen() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <SignUp />
     </View>
   );
 }
