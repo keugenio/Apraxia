@@ -30,7 +30,7 @@ export default function LoginForm() {
       setPassword(null);
       setLoading(false);
       setUser({... res.results})
-      navigation.navigate('Exercises')
+      navigation.navigate('Main')
       // that's all for now, just reset this form and
       // let auth().onAuthStateChanged handle setting up the user in App.js
     })
@@ -74,7 +74,7 @@ export default function LoginForm() {
             keyboardType='email-address'
             textContentType='emailAddress'
             inputStyle = {{paddingLeft:10}}
-            onChangeText = {(email)=>this.setState({email})}
+            onChangeText = {(email)=>setEmail(email)}
             value = {email}
           />
           <Input
@@ -90,7 +90,7 @@ export default function LoginForm() {
               }
             textContentType='password'
             inputStyle = {{paddingLeft:10}}
-            onChangeText = {(password)=>this.setState({password})}
+            onChangeText = {(password)=>setPassword(password)}
             value = {password}
           />
           <Text style={{color:'red', fontWeight:'900', alignSelf:'center'}}>{error}</Text>
@@ -98,7 +98,7 @@ export default function LoginForm() {
             icon={<Icon name='account-circle' color='#ffffff' />}
             buttonStyle={{borderRadius: 20, width:screenWidth/4, marginBottom:40}}
             title='Login'
-            onPress = {()=>{this.Login()}} 
+            onPress = {()=>{Login()}} 
             loading={loading}
           />
         </View>

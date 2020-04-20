@@ -31,7 +31,7 @@ const ExerciseCarousel = props => {
       <View style={styles.item}>
         <Card containerStyle={styles.cardStyle}>
           <Text style={styles.textStyle} numberOfLines={2}>
-            {item.word}
+            {item}
           </Text>        
         </Card>
       </View>

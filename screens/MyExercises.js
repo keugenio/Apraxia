@@ -1,27 +1,18 @@
 import * as WebBrowser from 'expo-web-browser';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Platform, StyleSheet, View, Alert, TouchableHighlight, Text, Dimensions, FlatList } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import Colors from '../constants/Colors';
 import ExerciseCarousel from "../components/Carousel";
-
+import { UserContext } from '../components/common/UserContext';
 
 const screenWidth = Dimensions.get('window').width;
 
 keyExtractor = (item, index) => index.toString()
 
-renderItem = ({ item }) => (
-  <ListItem
-    title={item.name}
-    subtitle={item.subtitle}
-    leftAvatar={{ source: { uri: item.avatar_url } }}
-    bottomDivider
-    chevron
-  />
-)
-
 export default function MyExercises() {
+  const {user} = useContext(UserContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentWords, setCurrentWords] = useState([]);
   const [exerciseType, setExerciseType] = useState();
@@ -69,45 +60,20 @@ export default function MyExercises() {
         type:'Phoenomic Group'
       },
   ];
-  const [page, setPage] = useState(1);
-  const [seed, setSeed] = useState(3);
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState();
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(()=>{
-    const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
-    
-    fetch(url)
-      .then(res => res.json())
-      .then(res => {
-        setData(res.results);
-        setError(res.error || null);
-        setLoading(false);
-        setRefreshing(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-      });
+    console.log('user:', user.assignments);
 
   }, []);
 
   return (
     <View style={styles.container}>
-      
-      { /* <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={{backgroundColor:Colors.backgroundColor}}>
-          {error && <Text style={{color:Colors.orange}}>{error}</Text>}
-          <Text style={{color:Colors.white}}>{data.length}</Text>
-          
-          {
-            exercises.map((item, i) => (
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={{backgroundColor:Colors.backgroundColor}}>         
+          { user && user.assignments.map((item, i) => (
               <ListItem
                 key={i}
-                title={item.name}
-                leftIcon={{ name: item.icon }}
+                title={item.title}
                 bottomDivider
                 chevron
                 badge={{ value: item.words.length, textStyle: { color: Colors.white}, containerStyle: { marginTop: 0 } }}
@@ -118,24 +84,9 @@ export default function MyExercises() {
                 }}
               />
             ))
-          }
-
-        </View> 
-        </ScrollView> */}
-          <FlatList
-            data={data}
-            renderItem={({ item, i }) => (
-              <ListItem
-                roundAvatar
-                chevron
-                title={`${item.name.first} ${item.name.last}`}
-                subtitle={item.email}
-                leftAvatar={{source:{uri: item.picture.thumbnail}}}
-                key={item => item.login.uuid}
-              />
-            )}
-          />      
-
+              } 
+        </View>    
+      </ScrollView>
       <Modal
         animationType="slide"
         transparent={true}
@@ -160,12 +111,7 @@ export default function MyExercises() {
           </View>
             </View>
       </Modal>
-
-      {/* <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-            </View> */}
     </View>  
-
   );
 }
 
@@ -204,24 +150,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+
   },
   tabBarInfoText: {
     fontSize: 17,

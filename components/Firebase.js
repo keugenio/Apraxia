@@ -19,9 +19,9 @@ const firebaseConfig = {
 const Firebase = firebase.initializeApp(firebaseConfig);
 
 // tables
-/* export const dbRaces = firebase.firestore().collection('races');
-export const dbRacesToPaddlers = firebase.firestore().collection('racesToPaddlers');
-export const dbAttendance = firebase.firestore().collection('practiceAttendance');
+export const UsersToExercises = firebase.firestore().collection('UsersToExercises');
+export const Exercises = firebase.firestore().collection('Exercises');
+/*export const dbAttendance = firebase.firestore().collection('practiceAttendance');
 export const dbAllPaddlers = firebase.firestore().collection('allPaddlers');
 export const dbCrews = firebase.firestore().collection('crews');
 export const dbAllTimeTrials = firebase.firestore().collection('TimeTrialsForEveryone');

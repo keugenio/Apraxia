@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Dimensions, Text, Button } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { UserContext } from './components/common/UserContext';
 
 import { SplashScreen } from 'expo';
@@ -10,7 +10,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
-import Firebase from '../Apraxia/components/Firebase';
+import Firebase, { UsersToExercises, Exercises } from '../Apraxia/components/Firebase';
 
 import MyExercises from '../Apraxia/screens/MyExercises';
 import Profile from '../Apraxia/screens/Profile';
@@ -32,6 +32,7 @@ export default function App(props) {
 
   const providerValue = useMemo(()=>({user, setUser}), [user, setUser]);
 
+  const exercises = [];
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     async function loadResourcesAndDataAsync() {
@@ -48,9 +49,28 @@ export default function App(props) {
         });
 
         // Load firebase
-        Firebase.auth().onAuthStateChanged((user)=>{
-          if (user){
-            setUser({...user})
+        Firebase.auth().onAuthStateChanged((aUser)=>{
+          if (aUser){
+            try {              
+              const keys = [];
+              const values = [];
+              UsersToExercises.doc(aUser.uid).get()
+                .then(doc=>{
+                  const exercises = doc.data()
+                  Object.keys(exercises).forEach(function (item) {
+                    Exercises.doc(item).get()
+                      .then((doc2)=>{
+                        values.push(doc2.data())
+                      })
+                  });
+              })
+              .then(()=>{               
+                 setUser({ ...aUser, assignments:values })
+              })              
+            }
+            catch (error) {
+              console.log('login error:' + error);
+            }``
          }
         })           
       } catch (e) {
@@ -149,7 +169,6 @@ function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
-
+    backgroundColor: Colors.background
   },
 });

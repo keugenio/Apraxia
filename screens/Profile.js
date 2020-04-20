@@ -2,12 +2,13 @@ import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, Text, View, SectionList, ImageBackground} from 'react-native';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View, SectionList, ImageBackground, Dimensions } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 import Firebase from '../components/Firebase';
 
 import Colors from '../constants/Colors';
 import { UserContext } from '../components/common/UserContext';
+const screenWidth = Dimensions.get('window').width;
 
 export default function Profile() {
   const {user, setUser} = useContext(UserContext);
@@ -15,48 +16,37 @@ export default function Profile() {
 
   return (
     <ImageBackground source={require('../assets/images/profile_bg.jpg')} style={styles.image}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={{backgroundColor:Colors.background}}>
-      
-        {user && <SectionList
-          sections={[
-            {title: 'Profile', data: ['email:' + user.email, (user.displayName && 'display Name:' + user.displayName)]},
-            {title: 'Your Therapist', data: ['Jackson', 'James']},
-          ]}
-          renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
-          renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-          keyExtractor={(item, index) => index}
-        /> }     
+      <View style={{flex:6, marginTop:30}}>
+        <View style={{backgroundColor:Colors.background, flex:6}}>
+        
+          {user && <SectionList
+            sections={[
+              {title: 'Profile', data: [(user.displayName && 'Name:' + user.displayName), 'email:' + user.email]},
+              {title: 'Your Therapist', data: ['Terry Pist', 'terrypist@example.com']},
+            ]}
+            renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
+            renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+            keyExtractor={(item, index) => index}
+          /> }     
+        </View>
+        <View style={styles.loginButtonsStyle}>
+          {user && <OptionButton
+            icon="md-exit"
+            label="Logout"
+            onPress={() => Firebase.auth().signOut().then(()=>{
+              setUser(null)
+            })}
+            isLastOption
+          />}
+              
+          {!user && <OptionButton
+            icon="md-person"
+            label="Login"
+            onPress={() => navigation.navigate("LoginModal")}
+            isLastOption
+          />}
+        </View>
       </View>
-      
-      <OptionButton
-        icon="md-chatboxes"
-        label="Your Therapist"
-        onPress={() => WebBrowser.openBrowserAsync('https://docs.expo.io')}
-      />
-
-      {user && <OptionButton
-        icon="md-information-circle"
-        label={user.email}
-        onPress={() => WebBrowser.openBrowserAsync('https://reactnavigation.org')}
-      />}
-
-      {user && <OptionButton
-        icon="md-exit"
-        label="Logout"
-        onPress={() => Firebase.auth().signOut().then(()=>{
-          setUser(null)
-        })}
-        isLastOption
-      />}
-          
-      {!user && <OptionButton
-        icon="md-person"
-        label="Login"
-        onPress={() => navigation.navigate("LoginModal")}
-        isLastOption
-      />}
-    </ScrollView>
     </ImageBackground>
   );
 }
@@ -66,7 +56,7 @@ function OptionButton({ icon, label, onPress, isLastOption }) {
     <RectButton underlayColor={Colors.orange} style={[styles.option, isLastOption && styles.lastOption]} onPress={onPress}>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.optionIconContainer}>
-          <Ionicons name={icon} size={22} color="rgba(0,0,0,0.35)" />
+          <Ionicons name={icon} size={24} color="rgba(0,0,0,0.5)" />
         </View>
         <View style={styles.optionTextContainer}>
           <Text style={styles.optionText}>{label}</Text>
@@ -88,7 +78,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   option: {
-    backgroundColor: '#fdfdfd',
+    backgroundColor: Colors.white,
     paddingHorizontal: 15,
     paddingVertical: 15,
     borderWidth: StyleSheet.hairlineWidth,
@@ -110,7 +100,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     fontSize: 14,
     fontWeight: 'bold',
-    backgroundColor: 'rgba(247,247,247,1.0)',
+    backgroundColor: Colors.white,
   },
   item: {
     padding: 10,
@@ -122,4 +112,25 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     justifyContent: "center",
   },
+  loginButtonsStyle:{
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'black',
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 20,
+      },
+    }),
+    alignItems:'flex-end',
+    backgroundColor: Colors.white,
+    paddingVertical: 6,
+    width:screenWidth
+  }
 });
