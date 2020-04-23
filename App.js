@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
 import { UserContext } from './components/common/UserContext';
 
 import { SplashScreen } from 'expo';
@@ -11,7 +11,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Firebase, { UsersToExercises, Exercises } from '../Apraxia/components/Firebase';
-
+import { _storeData } from '../Apraxia/components/common/AsyncStorage';
 import MyExercises from '../Apraxia/screens/MyExercises';
 import Profile from '../Apraxia/screens/Profile';
 import LoginForm from '../Apraxia/components/LoginForm';
@@ -65,12 +65,19 @@ export default function App(props) {
                   });
               })
               .then(()=>{               
-                 setUser({ ...aUser, assignments:values })
+                setUser({ ...aUser, assignments:values })                                  
+                //user && user.assignments ? (()=>_storeData('assignments',JSON.stringify({'assignments':user.assignments}))) : null ;
+                _storeData('displayName', user.displayName);
+                _storeData('email', user.email);
+                // _retrieveData('assignments').then((result)=>{
+                //   console.log(result.assignments[0].title);                  
+                // });
+                 
               })              
             }
             catch (error) {
               console.log('login error:' + error);
-            }``
+            }
          }
         })           
       } catch (e) {
@@ -83,7 +90,6 @@ export default function App(props) {
     }
     loadResourcesAndDataAsync();
   }, []);
-
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return null;
@@ -113,7 +119,7 @@ export default function App(props) {
 function MainStackScreen() {
   return (
     <Tab.Navigator
-      initialRouteName="Profile"
+      initialRouteName="Exercises"
       activeColor={Colors.orange}
       inactiveColor={Colors.gray}
       barStyle={{ backgroundColor: Colors.dark, justifyContent:"flex-end" }}
@@ -151,7 +157,6 @@ function MainStackScreen() {
     </Tab.Navigator>
   );
 }
-
 function LoginScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -166,6 +171,9 @@ function SignUpScreen() {
     </View>
   );
 }
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

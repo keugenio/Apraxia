@@ -1,68 +1,27 @@
 import * as WebBrowser from 'expo-web-browser';
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Platform, StyleSheet, View, Alert, TouchableHighlight, Text, Dimensions, FlatList } from 'react-native';
-import { Avatar, ListItem } from 'react-native-elements';
+import { Modal, StyleSheet, View, Alert, TouchableHighlight, Text, Dimensions } from 'react-native';
+import { ListItem } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import Colors from '../constants/Colors';
 import ExerciseCarousel from "../components/Carousel";
 import { UserContext } from '../components/common/UserContext';
+import { _retrieveData } from '../components/common/AsyncStorage';
 
 const screenWidth = Dimensions.get('window').width;
 
 keyExtractor = (item, index) => index.toString()
 
 export default function MyExercises() {
-  const {user} = useContext(UserContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentWords, setCurrentWords] = useState([]);
+  const [exercises, setExercises] = useState([]);
   const [exerciseType, setExerciseType] = useState();
-  const exercises = [
-      {
-        name: 'P',
-        words: [
-          {
-            word:'page'
-          },
-          {
-            word:'peer'
-          },
-          {
-            word:'pit'
-          },
-          {
-            word:'pond'
-          },
-          {
-            word:'put'
-          },
-        ],
-        type:'Phoenomic Group'
-      },
-      {
-        name: 'C',
-        words:[
-          {
-            word:'cage'
-          },
-          {
-            word:'key'
-          },
-          {
-            word:'kit'
-          },
-          {
-            word:'koi'
-          },
-          {
-            word:'coop'
-          },
-        ],
-        type:'Phoenomic Group'
-      },
-  ];
 
   useEffect(()=>{
-    console.log('user:', user.assignments);
+    _retrieveData('assignments').then((result)=>{
+      setExercises((result.assignments))                      
+    });
 
   }, []);
 
@@ -70,7 +29,7 @@ export default function MyExercises() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={{backgroundColor:Colors.backgroundColor}}>         
-          { user && user.assignments.map((item, i) => (
+          { exercises.map((item, i) => (
               <ListItem
                 key={i}
                 title={item.title}
@@ -86,14 +45,11 @@ export default function MyExercises() {
             ))
               } 
         </View>    
-      </ScrollView>
+      </ScrollView>      
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-        }}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -109,7 +65,7 @@ export default function MyExercises() {
               <Text style={styles.textStyle}>Done</Text>
             </TouchableHighlight>
           </View>
-            </View>
+        </View>
       </Modal>
     </View>  
   );
